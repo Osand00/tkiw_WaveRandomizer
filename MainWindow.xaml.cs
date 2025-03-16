@@ -31,6 +31,7 @@ namespace tkiw_WaveRandomizer
         {
             List<double> waveStrengths = new List<double>();
             Dictionary<string, double> enemyUnits = new Dictionary<string, double>();
+            int numOfColsOut = 0;
             //Creation of enemyUnits Dictionary
             //verify filepath
             if (File.Exists(filePath_tbx.Text))
@@ -42,7 +43,7 @@ namespace tkiw_WaveRandomizer
             //Determine Wave Generation
             waveStrengths = WaveStrengthGen(strengthAlgo_cbo.SelectedItem.ToString());
             //Build Wave_presets_village
-
+            Dictionary<int, List<string>> csvRows = WavePresetString(enemyUnits, waveStrengths, densityAlgo_cbo.SelectedItem.ToString(), ref numOfColsOut);
         }
         private static Dictionary<string, double> LoadEnemyUnits(string filePath)
         {
@@ -103,6 +104,54 @@ namespace tkiw_WaveRandomizer
                     throw new Exception("Failed to provide acceptable Wave Strength Algo");
             }
             return waveStrengths;
+        }
+
+        private static Dictionary<int, List<string>> WavePresetString(Dictionary<string, double> enemyUnits, List<double> waveStrengths, string? densityAlgo, ref int numOfColsOut)
+        {
+            Dictionary<int, List<string>> csvOut = new Dictionary<int, List<string>>();
+            int key = 1;
+            int currentRowTotalCol = 0;
+            int unitTarget = 0;
+            double unitMeanStrength = 0;
+            //build the waves
+            foreach (double wave in waveStrengths)
+            {
+                //check what desity method we will use to determine the number of units we want
+                switch (densityAlgo)
+                {
+                    case "linear":
+                        unitTarget = TotalUnitTargetLinear(wave); break;
+                    default :
+                        throw new Exception("Density Algo not given");
+                }
+                //generate a unit along a normal distribtion of unit target over wave stregth
+                unitMeanStrength = wave / Convert.ToDouble(unitTarget);
+                for (double i = 0; i < wave - wave*.10;)
+                {
+                    if (csvOut.ContainsKey(key))
+                    {
+                        csvOut[key].Add(GenNormalDistroUnit(enemyUnits, unitMeanStrength));
+                    }
+                    else
+                    {
+                        csvOut.Add(key, [GenNormalDistroUnit(enemyUnits, unitMeanStrength)]);
+                    }
+                    i = i + enemyUnits[csvOut[key].Last<string>()];
+                }
+            }
+            return csvOut;
+        }
+
+        private static int TotalUnitTargetLinear(double waveStrength)
+        {
+            return Convert.ToInt32(Double.Round(.2*waveStrength, 0));
+        }
+
+        //TODO
+        private static string GenNormalDistroUnit(Dictionary<string, double> enemyUnits, double unitMeanStrength)
+        {
+            //TODO Build method to pull unit based on a normal distro around unitMeanStrength
+            return "";
         }
     }
 }
