@@ -1,0 +1,88 @@
+id,Unit,Faction,Health,Dmg,Dmg Type,Atk speed,Atk range,dps
+slime_sand_small,,enemy,50,12,melee,0.6,0,20
+poison_snake,,enemy,3,2,melee,0.2,0,10
+mecha_bat,,enemy,50,12,melee,0.6,0,20
+mecha_mammoth,,enemy,2500,40,melee,1.5,0,26.67
+slime_green_small,,enemy,50,12,melee,0.6,0,20
+bogey,,enemy,150,0,,0,0,0
+zombie_1,,enemy,35,7,melee,0.6,0,11.67
+cathead,,enemy,50,12,melee,0.6,0,20
+zombie_2,,enemy,35,7,melee,0.6,0,11.67
+lava_drowner,,enemy,100,5,melee,0.6,0,8.33
+sludge_golem,,enemy,660,12,melee,0.9,0,13.33
+snow_golem,,enemy,660,12,melee,0.9,0,13.33
+sand_golem,,enemy,660,12,melee,0.9,0,13.33
+jason,,enemy,50,12,melee,0.9,0,13.33
+frank,,enemy,50,12,melee,0.9,0,13.33
+lava_wraith,,enemy,100,5,melee,0.6,0,8.33
+slime_green_big,,enemy,50,12,melee,0.6,0,20
+slime_blue_big,,enemy,50,12,melee,0.6,0,20
+slime_blue_small,,enemy,50,12,melee,0.6,0,20
+goblin_wife_boss,,enemy,3250,38,melee,1.2,0,31.67
+stickwalker_boss,,enemy,3250,38,melee,1.9,0,20
+lich_boss,,enemy,3250,38,melee,2.9,0,13.1
+reaper,,enemy,1000,38,,2.5,0,15.2
+ogre_boss,,enemy,3250,38,melee,1.2,0,31.67
+hair_witch_boss,,enemy,3250,38,melee,1.2,0,31.67
+goblin_spitter_boss,,enemy,3250,38,melee,1.2,0,31.67
+slime_sand_big,,enemy,50,12,melee,0.6,0,20
+vampire_lord_stage_1,,enemy,3250,38,melee,1.2,0,31.67
+vampire_lord_stage_3,,enemy,3250,21,melee,1.2,0,17.5
+three_headed_viper,,enemy,3250,38,melee,1.2,0,31.67
+goblin_builder,,enemy,40,5,melee,0.6,0,8.33
+vampire_lord_stage_2,,enemy,3250,70,melee,1.2,0,58.33
+jug,,enemy,50,12,melee,0.6,0,20
+goblin_crab_rider,Crab Rider,enemy,700,40,melee,0.6,0,66.67
+red_eye,Cyclops,enemy,3000,35,melee,1.5,0,23.33
+dragon_boss,Dragon Boss,enemy,13000,155,melee,1.3,0,119.23
+ent,Ent,enemy,370,15,melee,0.6,0,25
+goblin_bandit,Goblin Bandit,enemy,50,5,melee,0.7,0,7.14
+goblin_bat_rider,Goblin Bat Rider,enemy,290,12,melee,0.3,0,40
+goblin_boss,Goblin Boss,enemy,3250,38,melee,1.2,0,31.67
+goblin_crossbowman,Goblin Crossbowman,enemy,100,4,ranged,1,70,4
+goblin_mage_fire,Goblin Fire Mage,enemy,100,20,ranged,1,80,20
+goblin_giant,Goblin Giant,enemy,210,30,melee,0.9,0,33.33
+goblin_mage_healer,Goblin Healer Mage,enemy,90,0,melee,0,0,0
+goblin_mage_lightning,Goblin Lightning Mage,enemy,90,11,ranged,2,70,5.5
+goblin_lizard,Goblin Lizard,enemy,195,12,melee,0.6,5,20
+goblin_pig,Goblin Pig,enemy,480,10,melee,0.9,0,11.11
+goblin_shaman,Goblin Shaman,enemy,120,7,melee,0.6,0,11.67
+goblin_swordsman,Goblin Swordsman,enemy,105,8,melee,0.6,0,13.33
+golem,Golem,enemy,760,12,melee,0.9,0,13.33
+sunfaced,Sunfaced,enemy,1000,50,melee,1.5,0,33.33
+goblin_wall_buster,Wall Buster,enemy,230,0,,0,0,0
+imp_flyhead,,player,50,12,melee,0.6,0,20
+imp_beholder,,player,50,12,melee,0.6,0,20
+imp_giant,,player,50,12,melee,0.6,0,20
+imp_dog,,player,50,12,melee,0.6,0,20
+worm_rider,,player,100,10,melee,0.6,0,16.67
+goose_rider,,player,120,0,melee,0,0,0
+stickwalker_junior,,player,350,15,melee,0.9,0,16.67
+lady_boss_spirit,,player,5,0,melee,0,0,0
+cart,,player,50,5,melee,0.4,0,12.5
+imp_houndmouth,,player,50,12,melee,0.6,0,20
+skeleton_small,,player,70,7,melee,0.6,0,11.67
+skeleton_big,,player,120,10,melee,0.6,0,16.67
+scarecrow,,player,150,0,,0,0,0
+imp_skeleton_copper,,player,50,12,melee,0.6,0,20
+infernal_bat,,player,160,30,melee,0.6,0,50
+grave_digger,,player,35,4,melee,0.5,0,8
+cronen_small,,player,50,5,melee,0.6,0,8.33
+ram,,player,260,17,melee,0.6,0,28.33
+cronen_big,,player,160,12,melee,0.6,0,20
+human_militia_mega,,player,230,10,melee,0.6,0,16.67
+ballista,Ballista,player,90,40,ranged,2.7,180,14.81
+witcher,Beast Hunter,player,99,5,ranged,1.5,50,3.33
+catapult,Catapult,player,50,20,ranged,3,180,6.67
+human_crossbowman,Crossbowman,player,50,7,ranged,1.35,80,5.19
+mind_slave,Crystal Creature,player,333,43,melee,0.6,0,71.67
+mage_fire,Fire Mage,player,70,20,ranged,1,80,20
+flour_dragon,Flour Dragon,player,230,10,melee,0.6,0,16.67
+mage_healer,Healer Mage,player,70,0,,0,0,0
+infernal_hoof,Infernal Hoof,player,190,11,melee,0.6,0,18.33
+mage_lightning,Lightning Mage,player,70,13,ranged,2,70,6.5
+madman,Madman,player,70,3,melee,0.3,0,10
+human_militia,Militia,player,120,6,melee,0.6,0,10
+human_peasant,Peasant,player,35,7,melee,0.5,0,14
+human_horseman,Squire,player,120,0,melee,0,0,0
+human_swordsman,Swordsman,player,80,8.5,melee,0.6,0,14.17
