@@ -94,7 +94,7 @@ namespace tkiw_WaveRandomizer
                     // Write each unit and count in the wave
                     foreach (var unit in csvLine)
                     {
-                        writer.Write(unit + ",");
+                        writer.Write(unit + ",1,");
                     }
 
                     // Add empty fields for the remaining columns, based on the longest line (maxPairs)
