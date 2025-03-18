@@ -75,5 +75,10 @@
         <ComboBox x:Name="strengthAlgo_cbo" Margin="175,78,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200"/>
         <Label x:Name="FolderPathOut_lbn" Content="Output folder :" Margin="10,111,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="#FFFFFF"/>
         <TextBox x:Name="FolderPathOut_tbx" Margin="175,111,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
+        <Label x:Name="hpCoef_lbl" Content="HP Coefficient :" Margin="401,10,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="White"/>
+        <TextBox x:Name="hpCoef_tbx" Text="0.02" Margin="566,10,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
+        <Label x:Name="dmgCoef_lbl" Content="DMG Coefficient :" Margin="401,43,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="White"/>
+        <TextBox x:Name="dmgCoef_tbx" Text="0.3" Margin="566,43,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
+
     </Grid>
 </Window>
