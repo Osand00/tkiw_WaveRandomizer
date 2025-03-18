@@ -26,10 +26,7 @@ ogre_boss,,enemy,3250,38,melee,1.2,0,31.67
 hair_witch_boss,,enemy,3250,38,melee,1.2,0,31.67
 goblin_spitter_boss,,enemy,3250,38,melee,1.2,0,31.67
 slime_sand_big,,enemy,50,12,melee,0.6,0,20
-vampire_lord_stage_1,,enemy,3250,38,melee,1.2,0,31.67
-vampire_lord_stage_3,,enemy,3250,21,melee,1.2,0,17.5
 three_headed_viper,,enemy,3250,38,melee,1.2,0,31.67
-vampire_lord_stage_2,,enemy,3250,70,melee,1.2,0,58.33
 jug,,enemy,50,12,melee,0.6,0,20
 goblin_crab_rider,Crab Rider,enemy,700,40,melee,0.6,0,66.67
 red_eye,Cyclops,enemy,3000,35,melee,1.5,0,23.33

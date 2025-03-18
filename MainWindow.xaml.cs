@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using System;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -10,9 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
 using CsvHelper;
-using System.Globalization;
 
 namespace tkiw_WaveRandomizer
 {
@@ -24,62 +23,72 @@ namespace tkiw_WaveRandomizer
         public MainWindow()
         {
             InitializeComponent();
-            filePath_tbx.Text = @"..\..\..\unit.csv";
-            densityAlgo_cbo.Items.Add("Linear");
-            densityAlgo_cbo.Items.Add("Normal");
-            densityAlgo_cbo.SelectedItem = "Linear";
+            densityAlgo_cbo.Items.Add("linear");
+            densityAlgo_cbo.SelectedItem = "linear";
             strengthAlgo_cbo.Items.Add("Default");
-            strengthAlgo_cbo.Items.Add("Double");
             strengthAlgo_cbo.SelectedItem = "Default";
         }
 
-        // Existing code...
-        private void runGen_btn_Click(object sender, RoutedEventArgs e)
+        private void RunGen_btn_Click(object sender, RoutedEventArgs e)
         {
-            List<double> waveStrengths = new List<double>();
-            Dictionary<string, double> enemyUnits = new Dictionary<string, double>();
-            // Creation of enemyUnits Dictionary
-            // Verify filepath
-            if (File.Exists(filePath_tbx.Text))
+            List<double> waveStrengths = [];
+            Dictionary<string, double> enemyUnits = [];
+            Dictionary<double, List<string>> enemyUnitsReverse = [];
+            double stdDev;
+            //Creation of enemyUnits Dictionary
+            //verify filepath
+            if (File.Exists(filePath_tbx.Text)&& File.Exists(@"..\..\..\bonus.csv"))
             {
-                // Create enemy unit map
+                //create enemy unit map
                 enemyUnits = LoadEnemyUnits(filePath_tbx.Text);
+                enemyUnits = LoadEnemyUnitsBonus(enemyUnits, @"..\..\..\bonus.csv");
+                enemyUnitsReverse = LoadEnemyUnitsReverse(enemyUnits, out stdDev);
             }
-            else
-            {
-                throw new Exception("File path given is invalid");
-            }
-
-            // Determine Wave Generation
+            else { throw new Exception("File path given is invalid"); }
+            //Determine Wave Generation
             waveStrengths = WaveStrengthGen(strengthAlgo_cbo.SelectedItem.ToString());
+            //Build Wave_presets_village
+            Dictionary<int, List<string>> csvRows = WaveUnitGen(enemyUnits, enemyUnitsReverse, waveStrengths, stdDev, densityAlgo_cbo.SelectedItem.ToString(), out int numOfColsOut);
 
-            // Build Wave_presets_village
-            List<Dictionary<string, int>> csvRows = WavePresetString(enemyUnits, waveStrengths, densityAlgo_cbo.SelectedItem.ToString());
+            WriteCsvToFile(@"..\..\..\Wave_Presets_village.csv", csvRows, waveStrengths);
+        }
+        private static Dictionary<string, double> LoadEnemyUnitsBonus(Dictionary<string, double> enemyUnits, string filePath)
+        {
+            string[] bonusLines = File.ReadAllLines(filePath);
+            foreach (string line in bonusLines)
+            {
+                string[] parts = line.Split(',');
 
-            string outputFile = @"..\..\..\Wave_Presets_village.csv";
-            WriteCsvToFile(outputFile, csvRows, waveStrengths);
+                if (parts.Length != 2) continue; // Skip invalid lines
+
+                string unitName = parts[0];
+                if (!double.TryParse(parts[1].Trim(), out double bonusPower))
+                {
+                    continue; // Skip if bonus power is not a valid number
+                }
+
+                // If the unit exists in enemyUnits, add the bonus power
+                if (enemyUnits.ContainsKey(unitName))
+                {
+                    enemyUnits[unitName] += bonusPower;
+                }
+            }
+
+            return enemyUnits;
         }
 
-        // New method to handle writing to the CSV file
-        
-
-
-        private Dictionary<string, double> LoadEnemyUnits(string filePath)
+        //pull enemy units out of the csv File
+        private static Dictionary<string, double> LoadEnemyUnits(string filePath)
         {
-            Dictionary<string, double> enemyUnits = new Dictionary<string, double>();
+            Dictionary<string, double> enemyUnits = [];
             string[] fullFileContent = File.ReadAllLines(filePath);
-            //string[] unitFileHeaders = fullFileContent[0].Split(',');
+            //string[] unitFileHeaders = fullFileContent[0].Split(',');                         could be used to replace fullFileContent[0].Split(','). feels not worth
             string[] lineArr = new string[fullFileContent[0].Split(',').Length];
             int unitIdCol = 0, unitHpCol = 0, unitDmgCol = 0, unitAtkSpdCol = 0, unitDpsCol = 0, unitFactionCol = 0;
-            double healthPower = 0, dpsPower = 0;
+            double healthPower = 0.025;
+            double dpsPower = 0.4;
 
-            // Checks if the values given by the user are valid, if so saves them in healthPower and dpsPower
-            if (Double.TryParse(hpCoef_tbx.Text, out healthPower)) { }
-            else { throw new Exception("Invalid input for health power."); }
-            if (Double.TryParse(dmgCoef_tbx.Text, out dpsPower)) { }
-            else { throw new Exception("Invalid input for dps power."); }
-
-            // Get col indices
+            //get col indices
             for (int i = 0; i < fullFileContent[0].Split(',').Length; i++)
             {
                 switch (fullFileContent[0].Split(',')[i])
@@ -98,11 +107,10 @@ namespace tkiw_WaveRandomizer
                         unitFactionCol = i; break;
                 }
             }
-
-            // Add to dictionary
+            //add to dictionary
             foreach (string line in fullFileContent)
             {
-                // Skip headers and skip non enemies
+                //skip headers and skip non enemies
                 if (line == fullFileContent[0] || !line.Split(',')[unitFactionCol].Equals("enemy"))
                 {
                     continue;
@@ -110,210 +118,219 @@ namespace tkiw_WaveRandomizer
                 enemyUnits.Add(line.Split(',')[unitIdCol],
                     Double.Round(Convert.ToDouble(line.Split(',')[unitHpCol]) * healthPower + Convert.ToDouble(line.Split(',')[unitDpsCol]) * dpsPower, 2));
             }
-
             return enemyUnits;
+        }
+
+        //dictionary of enemy units with power as key instead of ID. create stdDev
+        private static Dictionary<double, List<string>> LoadEnemyUnitsReverse(Dictionary<string, double> enemyUnits, out double stdDev)
+        {
+            Dictionary<double, List<string>> enemyUnitsReverse = [];
+            foreach (KeyValuePair<string, double> entry in enemyUnits)
+            {
+                if (enemyUnitsReverse.TryGetValue(entry.Value, out List<string>? value))
+                {
+                    value.Add(entry.Key);
+                }
+                else
+                {
+                    enemyUnitsReverse.Add(entry.Value, new List<string>([entry.Key]));
+                }
+            }
+            double avg = enemyUnitsReverse.Keys.Average();
+            double sumOfSquaresOfDifferences = enemyUnitsReverse.Keys.Select(val => (val - avg) * (val - avg)).Sum();
+            //total pop stdDev calc
+            stdDev = Math.Sqrt(sumOfSquaresOfDifferences / enemyUnitsReverse.Keys.Count);
+            //dont think it would be needed but this is sample pop stdDev
+            //stdDev = Math.Sqrt(sumOfSquaresOfDifferences / (enemyUnitsReverse.Keys.Count - 1));
+            return enemyUnitsReverse;
         }
 
         private static List<double> WaveStrengthGen(string? genType)
         {
-            List<double> waveStrengths = new List<double>();
+            List<double> waveStrengths = [];
             switch (genType)
             {
                 case "Default":
-                    waveStrengths.AddRange(new double[] {
+                    waveStrengths.AddRange([
                         10, 10, 10, 10, 20, 20, 20, 20, 45, 45,
                         45, 45, 45, 45, 45, 45, 45, 45, 45, 120,
                         120, 120, 210, 210, 210, 210, 210, 300, 300, 300,
                         300, 300, 300, 300, 165, 450
-                    }); break;
-                case "Double":
-                    waveStrengths.AddRange(new double[] {
-                        20, 20, 20, 20, 40, 40, 40, 40, 90, 90,
-                        90, 90, 90, 90, 90, 90, 90, 90, 90, 240,
-                        240, 240, 420, 420, 420, 420, 420, 600, 600, 600,
-                        600, 600, 600, 600, 330, 900
-                    });
-                    break;
+                    ]); break;
                 default:
                     throw new Exception("Failed to provide acceptable Wave Strength Algo");
             }
             return waveStrengths;
         }
 
-        private static List<Dictionary<string, int>> WavePresetString(Dictionary<string, double> enemyUnits, List<double> waveStrengths, string? densityAlgo)
+        private static Dictionary<int, List<string>> WaveUnitGen(Dictionary<string, double> enemyUnits,
+                                                                 Dictionary<double, List<string>> enemyUnitsReverse,
+                                                                 List<double> waveStrengths,
+                                                                 double stdDev,
+                                                                 string? densityAlgo,
+                                                                 out int numOfColsOut)
         {
-            // List to store all waves' unit counts
-            List<Dictionary<string, int>> csvOut = new List<Dictionary<string, int>>();
-
-            // Dictionary to track the unit count in the current wave (csvLine)
-            Dictionary<string, int> csvLine = new Dictionary<string, int>();
-
+            Dictionary<int, List<string>> csvOut = [];
+            int key = 1;
             int unitTarget = 0;
             double unitMeanStrength = 0;
-
-            // Build the waves
+            numOfColsOut = 0;
+            Random _random = new();
+            //build the waves
             foreach (double wave in waveStrengths)
             {
-                // Determine the number of units for the current wave based on the density algorithm
+                //check what desity method we will use to determine the number of units we want
                 switch (densityAlgo)
                 {
-                    case "Linear":
-                        unitTarget = TotalUnitTargetLinear(wave);
-                        break;
-                    case "Normal":
-                        throw new Exception("Density Algo not implemented");
-                    default:
+                    case "linear":
+                        unitTarget = TotalUnitTargetLinear(wave); break;
+                    default :
                         throw new Exception("Density Algo not given");
                 }
-
-                // Generate a unit along a normal distribution of unit target over wave strength
+                //generate a unit along a normal distribtion of unit target over wave stregth
                 unitMeanStrength = wave / Convert.ToDouble(unitTarget);
-
-                // Track the total strength accumulated in the wave
-                double currentStrength = 0;
-
-                while (currentStrength < wave * 0.90)  // Runs until 90% of the wave strength is filled
+                for (double i = 0; i < wave - wave*.10;)
                 {
-                    string unitId = GenNormalDistroUnit(enemyUnits, unitMeanStrength);  // Get unit ID from normal distribution
-
-                    // Update the count of units in csvLine for this unit ID
-                    if (csvLine.ContainsKey(unitId))
+                    if (csvOut.TryGetValue(key, out List<string>? value))
                     {
-                        csvLine[unitId]++;  // Increment the count of this unit in the current wave
+                        value.Add(GenNormalDistroUnit(enemyUnitsReverse, unitMeanStrength, stdDev));
                     }
                     else
                     {
-                        csvLine.Add(unitId, 1);  // Add this unit with an initial count of 1
+                        csvOut.Add(key, [GenNormalDistroUnit(enemyUnitsReverse, unitMeanStrength, stdDev)]);
                     }
-
-                    // Add the strength of the unit to the current strength (assuming strength is determined by unit's health/dps)
-                    currentStrength += enemyUnits[unitId];  // Assuming `enemyUnits[unitId]` gives the strength of the unit
+                    i += enemyUnits[csvOut[key].Last<string>()];
                 }
-
-                // After processing the wave, add the csvLine (unit count per wave) to csvOut
-                csvOut.Add(new Dictionary<string, int>(csvLine));  // Store a copy of csvLine for the current wave
-
-                // Optionally, reset csvLine for the next wave (clear it out)
-                csvLine.Clear();  // Clear previous wave's unit data
+                if (csvOut[key].Count > numOfColsOut)
+                    numOfColsOut = csvOut[key].Count;
+                key++;
             }
-
-            // Return the list with all the waves' data
             return csvOut;
         }
 
         private static int TotalUnitTargetLinear(double waveStrength)
         {
-            return Convert.ToInt32(Double.Round(0.2 * waveStrength, 0));
+            return Convert.ToInt32(Double.Round(.2*waveStrength, 0));
         }
 
-        // Generate unit based on a normal distribution
-        private static string GenNormalDistroUnit(Dictionary<string, double> enemyUnits, double unitMeanStrength)
+        //TODO
+        private static string GenNormalDistroUnit(Dictionary<double, List<string>> enemyUnitsReverse, double unitMeanStrength, double stdDev)
         {
-            // Standard deviation for the normal distribution
-            double stdDev = 5;
-            double unitPower = NextDistributed(unitMeanStrength, stdDev, BoxMuller);
 
-            // Find unit closest to unitPower
-            double closestDifference = double.MaxValue;
-            string closestUnit = "";
-            foreach (var unit in enemyUnits)
+            Random _random = new Random();
+            double unitPower = NextDistributed(unitMeanStrength, stdDev, BoxMuller);
+            //find unit closest to unitpower and return that unit
+            List<string> values = enemyUnitsReverse[enemyUnitsReverse.Keys.OrderBy(item => Math.Abs(unitPower - item)).First()];
+            if (values.Count > 1)
             {
-                double diff = Math.Abs(unit.Value - unitPower);
-                if (diff < closestDifference)
-                {
-                    closestDifference = diff;
-                    closestUnit = unit.Key;
-                }
+                return values[_random.Next(0, values.Count)];
+            }else
+            {
+                return values[0];
             }
-            return closestUnit;
         }
 
-        // Func double double double means it needs a method that takes 2 doubles and returns a double
+        //func double double doube means it needs a method that takes 2 doubles and returns a double
         public static double NextDistributed(double mean, double stdDev, Func<double, double, double> transform)
         {
             var transformed = double.NaN;
-            Random _random = new Random();
-            // This loop just allows us to adapt to any transform function which
+            Random _random = new();
+            // this loop just allows us to adapt to any transform function which 
             // may provide invalid results based on random inputs.
             while (double.IsNaN(transformed))
             {
-                // Generate uniform randoms and pass to the supplied distribution transform.
+                // generate uniform randoms and pass to the supplied distribution
+                // transform.
                 var uniform1 = 1.0 - _random.NextDouble();
                 var uniform2 = 1.0 - _random.NextDouble();
                 transformed = transform(uniform1, uniform2);
             }
 
-            // Scale/shift by mean/std dev
+            // scale/shift by mean/std dev
             return mean + stdDev * transformed;
         }
 
-        // Box-Muller transform - produces normal distribution value based on 2
+        // Box-muller transform - produces normal dist val based on 2
         // uniformly distributed randoms
         public static double BoxMuller(double u1, double u2) =>
             System.Math.Sqrt(-2.0 * System.Math.Log(u1)) * System.Math.Sin(2.0 * System.Math.PI * u2);
 
-        private void WriteCsvToFile(string outputFile, List<Dictionary<string, int>> csvRows, List<double> waveStrengths)
+
+        // Marsaglia polar transform - actually generates 2 normals
+        //not used
+        public static double MarsagliaPolar(double u1, double u2)
         {
-            using var writer = new StreamWriter(outputFile);
-            using var csvOut = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            // map from [0, 1] -> [-1, 1]
+            var v1 = 2.0 * u1 - 1.0;
+            var v2 = 2.0 * u2 - 1.0;
 
-            // Write header row (wave number, mathematical cumulative strength, synergy bonus, total strength, unit and count)
-            csvOut.WriteField("Level");
-            csvOut.WriteField("wave preset id");
-            csvOut.WriteField("Mathematical score");
-            csvOut.WriteField("Bonus score");
-            csvOut.WriteField("Total score");
-            csvOut.WriteField("Unit");
-            csvOut.WriteField("Amount");
+            var s = v1 * v1 + v2 * v2;
 
-            int maxPairs = 0;
+            // reject numbers outside the unit circle
+            if (s is >= 1.0 or 0)
+                return double.NaN;
 
-            // Find the max number of units across all waves to dynamically handle extra columns
-            foreach (var csvLine in csvRows)
+            return v1 * System.Math.Sqrt(-2.0 * System.Math.Log(s) / s);
+        }
+        //generate the unit preset file
+        private static void WriteCsvToFile(string outputFile, Dictionary<int, List<string>> csvRows, List<double> waveStrengths)
+        {
+            using (StreamWriter writer = new StreamWriter(outputFile, false, Encoding.UTF8))
             {
-                if (csvLine.Count > maxPairs)
+                // Header fields
+                writer.Write("Level,wave preset id,Mathematical power,Bonus power,Total power,Unit,Amount");
+
+                int maxPairs = 0;
+
+                // Find the max number of units across all waves to dynamically handle extra columns
+                foreach (var csvLine in csvRows.Values)
                 {
-                    maxPairs = csvLine.Count;
-                }
-            }
-
-            // Add empty fields for the remaining columns based on the longest line
-            for (int i = 0; i < maxPairs; i++)
-            {
-                csvOut.WriteField(""); // Empty fields for unused unit columns
-                csvOut.WriteField(""); // Empty fields for unused count columns
-            }
-
-            csvOut.NextRecord();
-
-            // Write each wave data
-            int waveNumber = 1;
-            foreach (var csvLine in csvRows)
-            {
-                csvOut.WriteField("village"); // Level name
-                csvOut.WriteField(waveNumber); // Wave preset ID
-                csvOut.WriteField(waveStrengths[waveNumber - 1]); // Mathematical cumulative strength
-                csvOut.WriteField(""); // Synergy bonus (leave empty if not needed)
-                csvOut.WriteField(waveStrengths[waveNumber - 1]); // Total strength
-                waveNumber++;
-
-                // Write each unit and count in the wave
-                foreach (var kvp in csvLine)
-                {
-                    csvOut.WriteField(kvp.Key); // Unit name
-                    csvOut.WriteField(kvp.Value); // Unit count
+                    if (csvLine.Count > maxPairs)
+                    {
+                        maxPairs = csvLine.Count;
+                    }
                 }
 
-                // Add empty fields for the remaining columns, based on the longest line (maxPairs)
-                for (int i = csvLine.Count; i < maxPairs; i++)
+                // Add empty columns for the header to match the maxPairs
+                for (int i = 1; i < maxPairs; i++)
                 {
-                    csvOut.WriteField(""); // Empty fields for unused unit columns
-                    csvOut.WriteField(""); // Empty fields for unused count columns
+                    writer.Write(","); // Empty unit field
+                    writer.Write(","); // Empty count field
                 }
 
-                csvOut.NextRecord();
+                // Write a new line after the header
+                writer.WriteLine();
+
+                // Write wave data
+                int waveNumber = 1;
+                foreach (var csvLine in csvRows.Values)
+                {
+                    // Write the wave preset data
+                    writer.Write("village,");
+                    writer.Write(waveNumber + ",");
+                    writer.Write(waveStrengths[waveNumber - 1] + ","); // Mathematical cumulative strength
+                    writer.Write(","); // Synergy bonus (leave empty if not needed)
+                    writer.Write(waveStrengths[waveNumber - 1]); // Total strength
+                    writer.Write(",");
+
+                    // Write each unit and count in the wave
+                    foreach (var unit in csvLine)
+                    {
+                        writer.Write(unit + ",1,");
+                    }
+
+                    // Add empty fields for the remaining columns, based on the longest line (maxPairs)
+                    for (int i = csvLine.Count; i < maxPairs; i++)
+                    {
+                        writer.Write(","); // Empty unit field
+                        writer.Write(","); // Empty count field
+                    }
+
+                    // New line after each wave data
+                    writer.WriteLine();
+                    waveNumber++;
+                }
             }
         }
     }
 }
-
