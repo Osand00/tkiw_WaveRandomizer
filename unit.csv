@@ -4,7 +4,6 @@ poison_snake,,enemy,3,2,melee,0.2,0,10
 mecha_bat,,enemy,50,12,melee,0.6,0,20
 mecha_mammoth,,enemy,2500,40,melee,1.5,0,26.67
 slime_green_small,,enemy,50,12,melee,0.6,0,20
-bogey,,enemy,150,0,,0,0,0
 zombie_1,,enemy,35,7,melee,0.6,0,11.67
 cathead,,enemy,50,12,melee,0.6,0,20
 zombie_2,,enemy,35,7,melee,0.6,0,11.67
@@ -19,7 +18,6 @@ slime_green_big,,enemy,50,12,melee,0.6,0,20
 slime_blue_big,,enemy,50,12,melee,0.6,0,20
 slime_blue_small,,enemy,50,12,melee,0.6,0,20
 goblin_wife_boss,,enemy,3250,38,melee,1.2,0,31.67
-stickwalker_boss,,enemy,3250,38,melee,1.9,0,20
 lich_boss,,enemy,3250,38,melee,2.9,0,13.1
 reaper,,enemy,1000,38,,2.5,0,15.2
 ogre_boss,,enemy,3250,38,melee,1.2,0,31.67

@@ -157,6 +157,7 @@ namespace tkiw_WaveRandomizer
                         120, 40, 40, 45, 45, 45, 65, 65, 65, 120,
                         120, 120, 45, 165, 130, 130, 130, 185, 185, 185,
                         210, 210, 210, 130, 130, 210, 210, 210, 255, 255,
+                        255, 300, 300, 300, 210, 450
                     ]); break;
                 default:
                     throw new Exception("Failed to provide acceptable Wave Strength Algo");
@@ -307,8 +308,8 @@ namespace tkiw_WaveRandomizer
                 foreach (var csvLine in csvRows.Values)
                 {
                     // Write the wave preset data
-                    writer.Write("village,");
-                    writer.Write(waveNumber + ",");
+                    if (waveNumber == 1) { writer.Write("village"); }
+                    writer.Write(","+waveNumber + ",");
                     writer.Write(waveStrengths[waveNumber - 1] + ","); // Mathematical cumulative strength
                     writer.Write(","); // Synergy bonus (leave empty if not needed)
                     writer.Write(waveStrengths[waveNumber - 1]); // Total strength
