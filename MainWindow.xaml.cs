@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CsvHelper;
 
 namespace tkiw_WaveRandomizer
 {
@@ -47,7 +48,69 @@ namespace tkiw_WaveRandomizer
             waveStrengths = WaveStrengthGen(strengthAlgo_cbo.SelectedItem.ToString());
             //Build Wave_presets_village
             Dictionary<int, List<string>> csvRows = WaveUnitGen(enemyUnits, enemyUnitsReverse, waveStrengths, stdDev, densityAlgo_cbo.SelectedItem.ToString(), out int numOfColsOut);
+
+            WriteCsvToFile(@"..\..\..\Wave_Presets_village.csv", csvRows, waveStrengths);
         }
+        private static void WriteCsvToFile(string outputFile, Dictionary<int, List<string>> csvRows, List<double> waveStrengths)
+        {
+            using (StreamWriter writer = new StreamWriter(outputFile, false, Encoding.UTF8))
+            {
+                // Header fields
+                writer.Write("Название уровня,wave preset id,Математическая совокупная сила,Надбавка за синергию,Суммарная сила,Юнит,кол-во");
+
+                int maxPairs = 0;
+
+                // Find the max number of units across all waves to dynamically handle extra columns
+                foreach (var csvLine in csvRows.Values)
+                {
+                    if (csvLine.Count > maxPairs)
+                    {
+                        maxPairs = csvLine.Count;
+                    }
+                }
+
+                // Add empty columns for the header to match the maxPairs
+                for (int i = 1; i < maxPairs; i++)
+                {
+                    writer.Write(","); // Empty unit field
+                    writer.Write(","); // Empty count field
+                }
+
+                // Write a new line after the header
+                writer.WriteLine();
+
+                // Write wave data
+                int waveNumber = 1;
+                foreach (var csvLine in csvRows.Values)
+                {
+                    // Write the wave preset data
+                    writer.Write("village,");
+                    writer.Write(waveNumber + ",");
+                    writer.Write(waveStrengths[waveNumber - 1] + ","); // Mathematical cumulative strength
+                    writer.Write(","); // Synergy bonus (leave empty if not needed)
+                    writer.Write(waveStrengths[waveNumber - 1]); // Total strength
+                    writer.Write(",");
+
+                    // Write each unit and count in the wave
+                    foreach (var unit in csvLine)
+                    {
+                        writer.Write(unit + ",");
+                    }
+
+                    // Add empty fields for the remaining columns, based on the longest line (maxPairs)
+                    for (int i = csvLine.Count; i < maxPairs; i++)
+                    {
+                        writer.Write(","); // Empty unit field
+                        writer.Write(","); // Empty count field
+                    }
+
+                    // New line after each wave data
+                    writer.WriteLine();
+                    waveNumber++;
+                }
+            }
+        }
+
 
         //pull enemy units out of the csv File
         private static Dictionary<string, double> LoadEnemyUnits(string filePath)
