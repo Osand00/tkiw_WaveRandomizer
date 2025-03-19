@@ -216,12 +216,11 @@ namespace tkiw_WaveRandomizer
                     writer.Write(waveStrengths[waveNumber - 1] + ","); // Mathematical cumulative strength
                     writer.Write(","); // Synergy bonus (leave empty if not needed)
                     writer.Write(waveStrengths[waveNumber - 1]); // Total strength
-                    writer.Write(",");
 
                     // Write each unit and count in the wave
                     foreach (var unit in csvLine)
                     {
-                        writer.Write(unit + ",1,");
+                        writer.Write("," + unit + ",1");
                     }
 
                     // Add empty fields for the remaining columns, based on the longest line (maxPairs)
