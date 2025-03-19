@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:tkiw_WaveRandomizer"
         mc:Ignorable="d"
-        Title="The King is Watching Randimizor" Height="450" Width="800">
+        Title="The King is Watching Randimizor" Height="450" Width="723">
     <Window.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -64,21 +64,27 @@
         </Style>
     </Window.Resources>
     <Grid x:Name="content_grd" Background="#FF252525">
-        <Label x:Name="filePath_lbn" Content="File Path to units csv :" Margin="10,10,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="#FFFFFF"/>
-        <TextBox x:Name="filePath_tbx" Margin="175,10,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
-        <ComboBox x:Name="densityAlgo_cbo" Margin="175,43,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200"/>
-        <Label x:Name="densityAlgo_lbn" Content="Unit Density Algorithm :" Margin="10,43,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="#FFFFFF"/>
+        <Label x:Name="filePath_lbn" Content="File Path to units csv :" Margin="10,10,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalAlignment="Top" Foreground="#FFFFFF"/>
+        <TextBox x:Name="filePath_tbx" Margin="180,10,0,0" Height="28" Width="212" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
+        <ComboBox x:Name="densityAlgo_cbo" Margin="179,77,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="213"/>
+        <Label x:Name="densityAlgo_lbn" Content="Unit Density Algorithm :" Margin="10,77,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalAlignment="Top" Foreground="#FFFFFF"/>
         <Button x:Name="runGen_btn" Style="{DynamicResource RoundedButtonStyle}" Content="Run Generation" Margin="0,0,10,10" Height="28"
                 Background="#6666f4" Click="RunGen_btn_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="104" Foreground="#FFFFFF"
                 />
-        <Label x:Name="strengthAlgo_lbn" Content="Wave Strength Algorithm :" Margin="10,76,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="#FFFFFF"/>
-        <ComboBox x:Name="strengthAlgo_cbo" Margin="175,78,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200"/>
-        <Label x:Name="FolderPathOut_lbn" Content="Output folder :" Margin="10,111,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="#FFFFFF"/>
-        <TextBox x:Name="FolderPathOut_tbx" Margin="175,111,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
-        <Label x:Name="hpCoef_lbl" Content="HP Coefficient :" Margin="401,10,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="White"/>
-        <TextBox x:Name="hpCoef_tbx" Text="0.02" Margin="566,10,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
-        <Label x:Name="dmgCoef_lbl" Content="DMG Coefficient :" Margin="401,43,0,0" Height="28" HorizontalAlignment="Left" Width="160" VerticalAlignment="Top" Foreground="White"/>
-        <TextBox x:Name="dmgCoef_tbx" Text="0.3" Margin="566,43,0,0" Height="28" Width="200" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
+        <Label x:Name="strengthAlgo_lbn" Content="Wave Strength Algorithm :" Margin="10,118,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalAlignment="Top" Foreground="#FFFFFF"/>
+        <ComboBox x:Name="strengthAlgo_cbo" Margin="180,110,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="213"/>
+        <Label x:Name="FolderPathOut_lbn" Content="Output folder :" Margin="10,143,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalAlignment="Top" Foreground="#FFFFFF"/>
+        <TextBox x:Name="FolderPathOut_tbx" Margin="180,143,0,0" Height="28" Width="213" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
+        <Label x:Name="hpCoef_lbl" Content="HP Coefficient :" Margin="10,176,0,0" Height="28" HorizontalAlignment="Left" Width="171" VerticalAlignment="Top" Foreground="White"/>
+        <TextBox x:Name="hpCoef_tbx" Text="" Margin="180,176,0,0" Height="28" Width="213" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
+        <Label x:Name="dmgCoef_lbl" Content="DMG Coefficient :" Margin="10,209,0,0" Height="28" HorizontalAlignment="Left" Width="171" VerticalAlignment="Top" Foreground="White"/>
+        <TextBox x:Name="dmgCoef_tbx" Text="" Margin="180,209,0,0" Height="28" Width="213" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="White" Background="#FF333333"/>
+        <CheckBox x:Name="UseUnitFilePreLoad_cbx" Content="Use PreLoaded Units (v0.6)" Margin="397,10,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalContentAlignment="Center" Foreground="#FFFFFF" VerticalAlignment="Top" Click="UseUnitFilePreLoad_cbx_Checked"/>
+        <CheckBox x:Name="ChangeHpCof_cbx" Content="Change HP cof" Margin="397,176,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalContentAlignment="Center" Foreground="#FFFFFF" VerticalAlignment="Top" Click="ChangeHpCof_cbx_Checked"/>
+        <CheckBox x:Name="ChangeDmgCof_cbx" Content="Change Dmg cof" Margin="398,209,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalContentAlignment="Center" Foreground="#FFFFFF" VerticalAlignment="Top" Click="ChangeDmgCof_cbx_Checked" />
+        <Label x:Name="filePathBouns_lbn" Content="Path for power bouns csv :" Margin="10,43,0,0" Height="28" HorizontalAlignment="Left" Width="169" VerticalAlignment="Top" Foreground="#FFFFFF"/>
+        <TextBox x:Name="filePathBouns_txt" Margin="180,43,0,0" Height="28" Width="212" BorderBrush="White" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Foreground="#FFFFFF" Background="#FF333333"/>
+        <CheckBox x:Name="UseDefaultBouns_cbx" Content="Use Recommended Bonus for Units (v0.6)" Margin="397,43,0,0" Height="28" HorizontalAlignment="Left" Width="242" VerticalContentAlignment="Center" Foreground="#FFFFFF" VerticalAlignment="Top" Click="UseDefaultBouns_cbx_Checked"/>
 
     </Grid>
 </Window>
