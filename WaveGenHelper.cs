@@ -92,7 +92,14 @@ namespace tkiw_WaveRandomizer
             string[] bonusLines;
             if (String.IsNullOrEmpty(filePath))
             {
-                bonusLines = [];
+                bonusLines = ["goblin_shaman,0.5",
+                            "goblin_crossbowman,1.5",
+                            "goblin_wall_buster,3",
+                            "goblin_mage_lightning,4",
+                            "goblin_mage_healer,7.5",
+                            "goblin_boss,50",
+                            "dragon_boss,100"
+];
             }
             else if (File.Exists(filePath))
             {
@@ -117,7 +124,7 @@ namespace tkiw_WaveRandomizer
                 // If the unit exists in enemyUnits, add the bonus power
                 if (enemyUnits.ContainsKey(unitName))
                 {
-                    enemyUnits[unitName] += bonusPower;
+                    enemyUnits[unitName] = Math.Round(enemyUnits[unitName] + bonusPower,2);
                 }
             }
         }
@@ -216,12 +223,11 @@ namespace tkiw_WaveRandomizer
                     writer.Write(waveStrengths[waveNumber - 1] + ","); // Mathematical cumulative strength
                     writer.Write(","); // Synergy bonus (leave empty if not needed)
                     writer.Write(waveStrengths[waveNumber - 1]); // Total strength
-                    writer.Write(",");
 
                     // Write each unit and count in the wave
                     foreach (var unit in csvLine)
                     {
-                        writer.Write(unit + ",1,");
+                        writer.Write("," + unit + ",1");
                     }
 
                     // Add empty fields for the remaining columns, based on the longest line (maxPairs)
