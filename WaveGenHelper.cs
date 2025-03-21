@@ -46,6 +46,7 @@ namespace tkiw_WaveRandomizer
             {
                 fullFileContent = File.ReadAllLines(filePath);
             }else
+            else
             {
                 throw new Exception("invalid file path for load enemy untis");
             }
@@ -125,6 +126,7 @@ namespace tkiw_WaveRandomizer
                 if (enemyUnits.ContainsKey(unitName))
                 {
                     enemyUnits[unitName] = Math.Round(enemyUnits[unitName] + bonusPower,2);
+                    enemyUnits[unitName] = Math.Round(enemyUnits[unitName] + bonusPower, 2);
                 }
             }
         }
@@ -134,7 +136,8 @@ namespace tkiw_WaveRandomizer
             switch (genType)
             {
                 case "Default"://each prophecy option has 10 generated waves to choose from
-                    waveStrengths.AddRange([
+                case "Default"://default difficulty curve for base game
+                    waveStrengths.AddRange([//each prophecy option has 10 generated waves to choose from
                         10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
                         45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
                         45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
@@ -143,7 +146,7 @@ namespace tkiw_WaveRandomizer
                         185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210,
                         130, 130, 210, 210, 210, 210, 210, 210, 210, 210, 210, 210, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
                         300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 210, 450
-                    ]);break;
+                    ]); break;
                 default:
                     throw new Exception("Failed to provide acceptable Wave Strength Algo");
             }
@@ -187,7 +190,7 @@ namespace tkiw_WaveRandomizer
             }
         }
 
-        public void WriteCsvToFile(string filePath)
+        public void WriteCsvToPresetFile(string filePath)
         {
             using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
             {
@@ -245,6 +248,83 @@ namespace tkiw_WaveRandomizer
                 }
             }
         }
+
+        public void GenerateVillageData(string filepath = "", string maxProphecyText = "", string weekIncrementsText = "")
+        {
+            int currentWeek = 12; // Starting week
+            int prophecyAmount = string.IsNullOrEmpty(maxProphecyText) ? 5 : int.Parse(maxProphecyText); // default 5
+            int weekIncrements = string.IsNullOrEmpty(weekIncrementsText) ? 13 : int.Parse(weekIncrementsText); // default 13
+            int totalWeeks = 1 + prophecyAmount * 5;//total waves
+
+            // Define the range cycle dynamically
+            var wavePreset = GenerateRangeCycle(totalWeeks);
+            WriteCsvToTemplateFile(filepath, wavePreset, currentWeek, weekIncrements);
+        }
+        //if needed coule be divide into 2 methods
+        private List<string[]> GenerateRangeCycle(int totalWeeks)
+        {
+            var wavePreset = new List<string[]>();
+            int waveIndex = 1;
+
+            // Exception for the first week
+            wavePreset.Add(new[] { $"{waveIndex}" + ",,,prophecy" });
+            waveIndex++;
+
+            for (int i = 1; i < 26; i += 5) // Always generate the base 26 waves since it has a nice difficulty curve
+            {
+                // Add a prophecy selection
+                for (int j = 0; j < 3; j++)
+                {
+                    wavePreset.Add(new[] { $"{waveIndex + 0}-{waveIndex + 9}", $"{waveIndex + 10}-{waveIndex + 19}", $"{waveIndex + 20}-{waveIndex + 29}" + "," });
+                }
+                waveIndex += 30;
+
+                wavePreset.Add(new[] { $"{waveIndex}" + ",,,shop" }); // Shop
+                waveIndex++;
+                wavePreset.Add(new[] { $"{waveIndex}" + ",,,prophecy" }); // Dragon fight or prophecy selection
+                waveIndex++;
+            }
+
+            if (totalWeeks > 26)
+            {
+                double currentWavePower = waveStrengths[waveStrengths.Count - 1];
+                for (int i = 0; i < totalWeeks - 26; i += 5) //starts generating "endless" mode on top of base waves
+                {
+                     currentWavePower = Math.Floor(currentWavePower * 1.15);
+                    waveStrengths.AddRange([currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower, currentWavePower]);
+                    // Add a prophecy selection
+                    for (int j = 0; j < 3; j++)
+                    {
+                        wavePreset.Add(new[] { $"{waveIndex}-{waveIndex + 9}", $"{waveIndex}-{waveIndex + 9}", $"{waveIndex}-{waveIndex + 9}" + "," });
+                    }
+                    wavePreset.Add(new[] { $"{waveIndex}-{waveIndex + 9}" + ",,,shop" }); // Shop
+                    wavePreset.Add(new[] { $"{waveIndex}-{waveIndex + 9}" + ",,,prophecy" }); // Dragon fight or prophecy
+                    waveIndex += 10;
+                }
+            }
+
+            return wavePreset;
+        }
+
+        private void WriteCsvToTemplateFile(string filePath, List<string[]> wavePreset, int currentWeek, int weekIncrements)
+        {
+            
+            using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
+            {
+                writer.WriteLine("Level,Index,Week,Easy,Medium,Hard,Tag");
+                writer.Write("village");
+                for (int i = 0; i < wavePreset.Count; i++)
+                {
+                    // Join all elements in the wavePreset[i] array into a single string
+                    string waveData = string.Join(",", wavePreset[i]);
+
+                    // Write the row to the CSV file
+                    writer.WriteLine($",{i + 1},{currentWeek},{waveData}");
+                    currentWeek += weekIncrements;
+                }
+            }
+        }
+  
 
         private static int TotalUnitTargetLinear(double waveStrength)
         {

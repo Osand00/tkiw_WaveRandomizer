@@ -68,17 +68,40 @@ namespace tkiw_WaveRandomizer
             Generator.LoadEnemyUnitsBonus(filePathBouns_txt.Text);
             //generate wave stregths
             Generator.WaveStrengthGen(strengthAlgo_cbo.SelectedItem.ToString() ?? "");
+
+            //Generates values needed for endless wave generation 
+            //and
+            //Builds corresponding Wave_template_village
+            /**TODO: 
+            1. Divide this into 2 methods
+            2. Make a button to innitially hide the Prophecy amount and weeks between waves
+            3. Make a check to see if the file path is valid
+            **/
+            Generator.GenerateVillageData(TemplateFolderPathOut_tbx.Text,maxProphecy_tbx.Text, waveChange_tbx.Text);
+
             //generate the waves 
+            /**
+            TODO:
+            1.make dragon spawn only on the last wave;
+            2.Compress the unit wave lenght, instead of 
+            goblin_boss,1,goblin_boss,1,goblin_boss,1
+            make it output goblin_boss,3
+            **/
             Generator.WaveUnitGen(densityAlgo_cbo.SelectedItem.ToString() ?? "");
             //Build Wave_presets_village
             try
             {
-                Generator.WriteCsvToFile(FolderPathOut_tbx.Text);
+                Generator.WriteCsvToPresetFile(PresetFolderPathOut_tbx.Text);
             }
             catch
             {
                 throw new Exception("failed writing file");
             }
+        }
+
+        private void maxWave_tbx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }
