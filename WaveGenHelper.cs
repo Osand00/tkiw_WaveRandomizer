@@ -46,7 +46,6 @@ namespace tkiw_WaveRandomizer
             {
                 fullFileContent = File.ReadAllLines(filePath);
             }else
-            else
             {
                 throw new Exception("invalid file path for load enemy untis");
             }
@@ -135,7 +134,6 @@ namespace tkiw_WaveRandomizer
         {
             switch (genType)
             {
-                case "Default"://each prophecy option has 10 generated waves to choose from
                 case "Default"://default difficulty curve for base game
                     waveStrengths.AddRange([//each prophecy option has 10 generated waves to choose from
                         10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
